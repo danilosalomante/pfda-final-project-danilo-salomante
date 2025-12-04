@@ -7,6 +7,8 @@ def main():
     The main function that calls other functions to perform sprite conversion.
     
     '''
+    run_ui()
+
 def image_to_pixels(input_path, sprite_size, pallete = None):
     '''
     Converts image to sprite with optional pallete.
@@ -54,3 +56,6 @@ def run_ui():
                 sprite.save(output_path)
             
         file_label.config(text="Conversion completed!")
+
+if __name__ == "__main__":
+    main()
