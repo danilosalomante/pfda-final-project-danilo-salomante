@@ -1,5 +1,5 @@
 import os
-from tkinter import Tk, filedialog, label, Button, OptionMenu, StringVar
+from tkinter import Tk, filedialog, StringVar, ttk
 from PIL import Image
 
 def main():
@@ -45,6 +45,8 @@ def run_ui():
             return
         
         sprite_size = int(size_var.get())
+        
+        output_folder = "converted_sprites"
         os.makedirs(output_folder,exist_ok=True)
 
         for path in selected_files:
@@ -56,6 +58,20 @@ def run_ui():
                 sprite.save(output_path)
             
         file_label.config(text="Conversion completed!")
+
+    ttk.Label(root, text="Sprite Converter", font=("Arial", 16)).pack(pady=10)
+    ttk.Button(root, text="Select Images", command=select_files).pack()
+
+    file_label = ttk.Label(root, text="No files selected")
+    file_label.pack(pady=5)
+
+    ttk.Label(root, text="Select Sprite Size:").pack()
+    ttk.OptionMenu(root, sprite_size_var, *sprite_sizes).pack(pady=5)
+
+    ttk.Button(root, text="Convert Images", command=convert_images)
+
+    root.mainloop()
+
 
 if __name__ == "__main__":
     main()
