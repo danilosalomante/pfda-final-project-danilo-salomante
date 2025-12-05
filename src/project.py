@@ -14,6 +14,17 @@ def image_to_pixels(input_path, sprite_size, pallete = None):
     Converts image to sprite with optional pallete.
     
     '''
+
+    with Image.open(input_path).convert("RGB") as img:
+        img = img.resize((sprite_size, sprite_size), Image.NEAREST)
+
+        if pallete:
+            small = small.quantize(palette=pallete)
+
+        result = small.resize((sprite_size, sprite_size), Image.NEAREST)
+
+        return result
+
 def run_ui():
     '''
     Main application UI.
@@ -44,7 +55,7 @@ def run_ui():
             file_label.config(text="No files selected!")
             return
         
-        sprite_size = int(size_var.get())
+        sprite_size = int(sprite_size_var.get())
         
         output_folder = "converted_sprites"
         os.makedirs(output_folder,exist_ok=True)
