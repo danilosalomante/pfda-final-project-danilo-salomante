@@ -15,15 +15,15 @@ def image_to_pixels(input_path, sprite_size, pallete = None):
     
     '''
 
-    with Image.open(input_path).convert("RGB") as img:
-        img = img.resize((sprite_size, sprite_size), Image.NEAREST)
+    img = Image.open(input_path).convert("RGB")
+    
+    small = img.resize((sprite_size, sprite_size), Image.NEAREST)
 
-        if pallete:
+    if pallete:
             small = small.quantize(palette=pallete)
 
-        result = small.resize((sprite_size, sprite_size), Image.NEAREST)
 
-        return result
+    return small
 
 def run_ui():
     '''
@@ -55,7 +55,7 @@ def run_ui():
             file_label.config(text="No files selected!")
             return
         
-        sprite_size = int(sprite_size_var.get("x")[0])
+        sprite_size = int(sprite_size_var.get().split("x")[0])
         
         output_folder = "converted_sprites"
         os.makedirs(output_folder,exist_ok=True)
