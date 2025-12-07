@@ -35,7 +35,7 @@ def run_ui():
     root.geometry("400x250")
 
     # Sprite size selection
-    sprite_sizes = int(sprite_size_var.get().split('x')[0])
+    sprite_sizes = ["8x8", "16x16", "32x32", "64x64"]
     sprite_size_var = StringVar(root)
     sprite_size_var.set(sprite_sizes[0])
 
@@ -55,7 +55,7 @@ def run_ui():
             file_label.config(text="No files selected!")
             return
         
-        sprite_size = int(sprite_size_var.get())
+        sprite_size = int(sprite_size_var.get("x")[0])
         
         output_folder = "converted_sprites"
         os.makedirs(output_folder,exist_ok=True)
