@@ -1,6 +1,6 @@
 import os
 from tkinter import Tk, filedialog, StringVar, ttk
-from PIL import Image
+from PIL import Image, ImageTk
 
 def main():
     '''
@@ -70,6 +70,30 @@ def run_ui():
             
         file_label.config(text="Conversion completed!")
 
+    def preview_image():
+
+        if not selected_files:
+            file_label.config(text="No files selected!")
+            return
+
+        sprite_size = int(sprite_size_var.get().split("x")[0])
+
+        sprite = image_to_pixels(selected_files[0], sprite_size)
+        if sprite is None:
+            return
+        
+        preview_window = Tk()
+        preview_window.title("Sprite Preview")
+        preview_window.geometry(f"{sprite_size+20}x{sprite_size+20}")
+
+        tk_img = ImageTk.PhotoImage(sprite)
+
+        img_label = ttk.Label(preview_window, image=tk_img)
+        img_label.image = tk_img
+        img_label.pack(pady=10)
+
+        preview_window.mainloop()
+
     ttk.Label(root, text="Sprite Converter", font=("Arial", 16)).pack(pady=10)
     ttk.Button(root, text="Select Images", command=select_files).pack()
 
@@ -80,6 +104,7 @@ def run_ui():
     ttk.OptionMenu(root, sprite_size_var, sprite_sizes[0], *sprite_sizes).pack(pady=5)
 
     ttk.Button(root, text="Convert Images", command=convert_images).pack(pady=10)
+    ttk.Button(root, text="Preview First Image", command=preview_image).pack(5)
 
     root.mainloop()
 
