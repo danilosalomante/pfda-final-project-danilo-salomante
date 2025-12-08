@@ -3,7 +3,7 @@ from tkinter import Tk, filedialog, StringVar, OptionMenu, Toplevel, DoubleVar
 from tkinter import ttk, Scale, HORIZONTAL
 from PIL import Image, ImageTk, ImageEnhance
 
-Palletes = {
+Palettes = {
     "Default": None,
     "Gameboy": [
         (15, 56, 15),
@@ -23,6 +23,28 @@ Palletes = {
         (41, 173, 255), (131, 118, 156), (255, 119, 168), (255, 204, 170)
     ],
 }
+
+def make_palette(rbg_list):
+    '''
+    Creates a pallete image from a list of RGB tuples.
+    
+    '''
+    if rbg_list is None:
+        return None
+    
+    flat = []
+    for (r, g, b) in rbg_list:
+        flat.extend([r, g, b])
+
+    pad_len = 256 * 3 - len(flat)
+    if pad_len > 0:
+        flat.extend([0] * pad_len)
+
+    pallete_img = Image.new("P", (16, 16))
+    pallete_img.putpalette(flat)
+    return pallete_img
+
+Pallete_Images = (None if rgb is None else make_palette(rgb) for name, rgb in Palettes.items())
 
 def main():
     '''
