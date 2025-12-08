@@ -83,11 +83,12 @@ def run_ui():
         if sprite is None:
             return
         
+        display_image = sprite.resize((sprite_size*16, sprite_size*16), Image.NEAREST)
+
         preview_window = Toplevel(root)
         preview_window.title("Sprite Preview")
-        preview_window.geometry(f"{sprite_size+20}x{sprite_size+20}")
 
-        tk_img = ImageTk.PhotoImage(sprite)
+        tk_img = ImageTk.PhotoImage(display_image)
 
         img_label = ttk.Label(preview_window, image=tk_img)
         img_label.image = tk_img
