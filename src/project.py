@@ -45,8 +45,8 @@ def make_palette(rbg_list):
     return palette_img
 
 Palette_Images = {
-    name: (None if rgb is None else make_palette(rgb)) for name, 
-    rgb in Palettes.items()
+    name: (None if rgba is None else make_palette(rgba)) for name, 
+    rgba in Palettes.items()
     }
 
 def main():
@@ -61,20 +61,25 @@ def image_to_pixels(input_path, sprite_size, brightness=1.0, contrast=1.0, satur
     Converts image to sprite with optional pallete.
     
     '''
-
-    img = Image.open(input_path).convert("RGB")
+    img = Image.open(input_path).convert("RGBA")
+    rgb = img.convert("RGB")
+    a = img.getchannel("A")
 
     # Image Adjustments
-    img = ImageEnhance.Brightness(img).enhance(brightness)
-    img = ImageEnhance.Contrast(img).enhance(contrast)
-    img = ImageEnhance.Color(img).enhance(saturation)
+    rgb = ImageEnhance.Brightness(rgb).enhance(brightness)
+    rgb = ImageEnhance.Contrast(rgb).enhance(contrast)
+    rgb = ImageEnhance.Color(rgb).enhance(saturation)
+
+    img = Image.merge("RGBA", (*rgb.split(),a))
 
     small = img.resize((sprite_size, sprite_size), Image.NEAREST)
 
     palette_img = Palette_Images.get(palette_name)
     if palette_img is not None:
-        small = small.quantize(palette=palette_img)
-        small = small.convert("RGB")
+        rgb_small = small.convert("RGB").quantize(palette=palette_img).convert("RGB")
+        alpha_small = small.getchannel("A")
+
+        small = Image.merge("RGBA", (*rgb_small.split(), alpha_small))
 
 
     return small
@@ -165,7 +170,7 @@ def run_ui():
         display_h = sprite_size * scale_factor
         display_img = sprite.resize((display_w, display_h), Image.NEAREST)
 
-        tk_img = ImageTk.PhotoImage(display_img)
+        tk_img = ImageTk.PhotoImage(display_img.convert("RGBA"))
 
         if preview_window is None or not preview_window.winfo_exists():
             preview_window = Toplevel(root)
