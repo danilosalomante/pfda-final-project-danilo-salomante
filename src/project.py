@@ -26,7 +26,7 @@ Palettes = {
 
 def make_palette(rbg_list):
     '''
-    Creates a pallete image from a list of RGB tuples.
+    Creates a palette image from a list of RGB tuples.
     
     '''
     if rbg_list is None:
@@ -40,11 +40,14 @@ def make_palette(rbg_list):
     if pad_len > 0:
         flat.extend([0] * pad_len)
 
-    pallete_img = Image.new("P", (16, 16))
-    pallete_img.putpalette(flat)
-    return pallete_img
+    palette_img = Image.new("P", (16, 16))
+    palette_img.putpalette(flat)
+    return palette_img
 
-Pallete_Images = (None if rgb is None else make_palette(rgb) for name, rgb in Palettes.items())
+Palette_Images = {
+    name: (None if rgb is None else make_palette(rgb)) for name, 
+    rgb in Palettes.items()
+    }
 
 def main():
     '''
@@ -53,7 +56,7 @@ def main():
     '''
     run_ui()
 
-def image_to_pixels(input_path, sprite_size, brightness=1.0, contrast=1.0, saturation=1.0, pallete = None):
+def image_to_pixels(input_path, sprite_size, brightness=1.0, contrast=1.0, saturation=1.0, palette_name="Default"):
     '''
     Converts image to sprite with optional pallete.
     
@@ -68,8 +71,10 @@ def image_to_pixels(input_path, sprite_size, brightness=1.0, contrast=1.0, satur
 
     small = img.resize((sprite_size, sprite_size), Image.NEAREST)
 
-    if pallete:
-            small = small.quantize(palette=pallete)
+    palette_img = Palette_Images.get(palette_name)
+    if palette_img is not None:
+        small = small.quantize(palette=palette_img)
+        small = small.convert("RGB")
 
 
     return small
@@ -87,6 +92,11 @@ def run_ui():
     sprite_sizes = ["8x8", "16x16", "32x32", "64x64", "128x128"]
     sprite_size_var = StringVar(root)
     sprite_size_var.set(sprite_sizes[0])
+
+    # Palette selection
+    palette_names = list(Palettes.keys())
+    palette_var = StringVar(root)
+    palette_var.set(palette_names[0])
 
     # Selected files 
     selected_files = []
@@ -126,7 +136,8 @@ def run_ui():
             sprite = image_to_pixels(path, sprite_size, 
                                      brightness_var.get(), 
                                      contrast_var.get(), 
-                                     saturation_var.get())
+                                     saturation_var.get(),
+                                     palette_name=palette_var.get())
             sprite.save(output_path)
 
         file_label.config(text="Conversion completed!")
@@ -136,14 +147,24 @@ def run_ui():
         if not selected_files:
             return
 
-        sprite_size = int(sprite_size_var.get().split("x")[0])
+        try:
+            sprite_size = int(sprite_size_var.get().split("x")[0])
+        except Exception:
+            sprite_size = 16
+
         sprite = image_to_pixels(
         selected_files[0], sprite_size, 
         brightness_var.get(), 
         contrast_var.get(), 
-        saturation_var.get()
+        saturation_var.get(),
+        palette_name=palette_var.get()
         )
-        display_img = sprite.resize((sprite_size*4, sprite_size*4), Image.NEAREST)
+
+        scale_factor = max(4, 512 // max(1, sprite_size))
+        display_w = sprite_size * scale_factor
+        display_h = sprite_size * scale_factor
+        display_img = sprite.resize((display_w, display_h), Image.NEAREST)
+
         tk_img = ImageTk.PhotoImage(display_img)
 
         if preview_window is None or not preview_window.winfo_exists():
@@ -163,8 +184,14 @@ def run_ui():
     file_label = ttk.Label(root, text="No files selected")
     file_label.pack(pady=5)
 
+    top_row = ttk.Frame(root)
+    top_row.pack(fill="x", pady=10)
+
     ttk.Label(root, text="Select Sprite Size:").pack()
     OptionMenu(root, sprite_size_var, sprite_sizes[0], *sprite_sizes[1:]).pack(pady=5)
+
+    ttk.Label(top_row, text="Palette:").grid(row=0, column=2, sticky="w", padx=(12,0))
+    OptionMenu(top_row, palette_var, palette_names[0], *palette_names[1:], command=lambda e: update_preview()).grid(row=0, column=3, padx=6)
 
     ttk.Label(root, text="Brightness").pack()
     Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
