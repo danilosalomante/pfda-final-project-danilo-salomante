@@ -103,7 +103,7 @@ def run_ui():
     file_label.pack(pady=5)
 
     ttk.Label(root, text="Select Sprite Size:").pack()
-    OptionMenu(root, sprite_size_var, sprite_sizes[0], *sprite_sizes).pack(pady=5)
+    OptionMenu(root, sprite_size_var, sprite_sizes[0], *sprite_sizes[1:]).pack(pady=5)
 
     ttk.Button(root, text="Convert Images", command=convert_images).pack(pady=10)
     ttk.Button(root, text="Preview First Image", command=preview_image).pack(pady=5)
