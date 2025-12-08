@@ -53,6 +53,11 @@ def run_ui():
     contrast_var = DoubleVar(value=1.0)
     saturation_var = DoubleVar(value=1.0)
 
+    # Preview Window Variables
+    preview_window = None
+    preview_label = None
+    preview_img = None
+
     def select_files():
         nonlocal selected_files
         selected_files = filedialog.askopenfilenames(
@@ -83,30 +88,31 @@ def run_ui():
 
         file_label.config(text="Conversion completed!")
 
-    def preview_image():
-
+    def update_preview(*args):
+        nonlocal preview_window, preview_label, preview_img
         if not selected_files:
-            file_label.config(text="No files selected!")
             return
 
         sprite_size = int(sprite_size_var.get().split("x")[0])
+        sprite = image_to_pixels(
+        selected_files[0], sprite_size, 
+        brightness_var.get(), 
+        contrast_var.get(), 
+        saturation_var.get()
+        )
+        display_img = sprite.resize((sprite_size*8, sprite_size*8), Image.NEAREST)
+        tk_img = ImageTk.PhotoImage(display_img)
 
-        sprite = image_to_pixels(selected_files[0], 
-                                 sprite_size, 
-                                 brightness_var.get(), 
-                                 contrast_var.get(), 
-                                 saturation_var.get())
-        
-        display_image = sprite.resize((sprite_size*8, sprite_size*8), Image.NEAREST)
+        if preview_window is None or not preview_window.winfo_exists():
+            preview_window = Toplevel(root)
+            preview_window.title("Preview")
+            preview_label = ttk.Label(preview_window, image=tk_img)
+            preview_label.image = tk_img
+            preview_label.pack(padx=10, pady=10)
 
-        preview_window = Toplevel(root)
-        preview_window.title("Sprite Preview")
-
-        tk_img = ImageTk.PhotoImage(display_image)
-
-        img_label = ttk.Label(preview_window, image=tk_img)
-        img_label.image = tk_img
-        img_label.pack(pady=10)
+        else:
+            preview_label.config(image=tk_img)
+            preview_label.image = tk_img
 
     ttk.Label(root, text="Sprite Converter", font=("Arial", 16)).pack(pady=10)
     ttk.Button(root, text="Select Images", command=select_files).pack()
@@ -119,18 +125,17 @@ def run_ui():
 
     ttk.Label(root, text="Brightness").pack()
     Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
-          variable=brightness_var).pack(fill="x", padx=20)
+          variable=brightness_var, command=lambda e:update_preview()).pack(fill="x", padx=20)
 
     ttk.Label(root, text="Contrast").pack()
     Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
-          variable=contrast_var).pack(fill="x", padx=20)
+          variable=contrast_var,command=lambda e:update_preview()).pack(fill="x", padx=20)
 
     ttk.Label(root, text="Saturation").pack()
     Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
-          variable=saturation_var).pack(fill="x", padx=20)
+          variable=saturation_var,command=lambda e:update_preview()).pack(fill="x", padx=20)
 
     ttk.Button(root, text="Convert Images", command=convert_images).pack(pady=10)
-    ttk.Button(root, text="Preview First Image", command=preview_image).pack(pady=5)
 
     root.mainloop()
 
