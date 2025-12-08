@@ -3,6 +3,27 @@ from tkinter import Tk, filedialog, StringVar, OptionMenu, Toplevel, DoubleVar
 from tkinter import ttk, Scale, HORIZONTAL
 from PIL import Image, ImageTk, ImageEnhance
 
+Palletes = {
+    "Default": None,
+    "Gameboy": [
+        (15, 56, 15),
+        (48, 98, 48),
+        (139, 172, 15),
+        (155, 188, 15)],
+    "NES":[
+        (124, 124, 124), (0, 0, 252), (0, 0, 188), (68, 40, 188),
+        (148, 0, 132), (168, 0, 32), (168, 16, 0), (136, 20, 0),
+        (80, 48, 0), (0, 120, 0), (0, 104, 0), (0, 88, 0),
+        (0, 64, 88), (0, 0, 0), (0, 0, 0), (0, 0, 0)
+    ],
+    "Pico-8":[
+         (0, 0, 0), (29, 43, 83), (126, 37, 83), (0, 135, 81),
+        (171, 82, 54), (95, 87, 79), (194, 195, 199), (255, 241, 232),
+        (255, 0, 77), (255, 163, 0), (255, 240, 36), (0, 231, 86),
+        (41, 173, 255), (131, 118, 156), (255, 119, 168), (255, 204, 170)
+    ],
+}
+
 def main():
     '''
     The main function that calls other functions to perform sprite conversion.
