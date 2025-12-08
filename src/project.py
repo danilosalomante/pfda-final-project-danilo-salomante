@@ -100,7 +100,7 @@ def run_ui():
         contrast_var.get(), 
         saturation_var.get()
         )
-        display_img = sprite.resize((sprite_size*8, sprite_size*8), Image.NEAREST)
+        display_img = sprite.resize((sprite_size*4, sprite_size*8), Image.NEAREST)
         tk_img = ImageTk.PhotoImage(display_img)
 
         if preview_window is None or not preview_window.winfo_exists():
