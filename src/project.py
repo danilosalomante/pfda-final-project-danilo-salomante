@@ -83,7 +83,7 @@ def run_ui():
         if sprite is None:
             return
         
-        display_image = sprite.resize((sprite_size*16, sprite_size*16), Image.NEAREST)
+        display_image = sprite.resize((sprite_size*8, sprite_size*8), Image.NEAREST)
 
         preview_window = Toplevel(root)
         preview_window.title("Sprite Preview")
