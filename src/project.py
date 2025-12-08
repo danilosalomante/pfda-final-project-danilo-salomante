@@ -1,7 +1,7 @@
 import os
 from tkinter import Tk, filedialog, StringVar, OptionMenu, Toplevel
-from tkinter import ttk
-from PIL import Image, ImageTk
+from tkinter import ttk, Scale, HORIZONTAL
+from PIL import Image, ImageTk, ImageEnhance
 
 def main():
     '''
@@ -10,14 +10,19 @@ def main():
     '''
     run_ui()
 
-def image_to_pixels(input_path, sprite_size, pallete = None):
+def image_to_pixels(input_path, sprite_size, brightness=1.0, contrast=1.0, saturation=1.0, pallete = None):
     '''
     Converts image to sprite with optional pallete.
     
     '''
 
     img = Image.open(input_path).convert("RGB")
-    
+
+    # Image Adjustments
+    img = ImageEnhance.Brightness(img).enhance(brightness)
+    img = ImageEnhance.Contrast(img).enhance(contrast)
+    img = ImageEnhance.Color(img).enhance(saturation)
+
     small = img.resize((sprite_size, sprite_size), Image.NEAREST)
 
     if pallete:
@@ -43,6 +48,11 @@ def run_ui():
     # Selected files 
     selected_files = []
 
+    # Slider values
+    brightness_var = ttk.DoubleVar(value=1.0)
+    contrast_var = ttk.DoubleVar(value=1.0)
+    saturation_var = ttk.DoubleVar(value=1.0)
+
     def select_files():
         nonlocal selected_files
         selected_files = filedialog.askopenfilenames(
@@ -65,10 +75,12 @@ def run_ui():
             filename = os.path.basename(path)
             output_path = os.path.join(output_folder, f"sprite_{sprite_size}x{sprite_size}_" + filename)
 
-            sprite = image_to_pixels(path, sprite_size)
-            if sprite:
-                sprite.save(output_path)
-            
+            sprite = image_to_pixels(path, sprite_size, 
+                                     brightness_var.get(), 
+                                     contrast_var.get(), 
+                                     saturation_var.get())
+            sprite.save(output_path)
+
         file_label.config(text="Conversion completed!")
 
     def preview_image():
@@ -79,9 +91,11 @@ def run_ui():
 
         sprite_size = int(sprite_size_var.get().split("x")[0])
 
-        sprite = image_to_pixels(selected_files[0], sprite_size)
-        if sprite is None:
-            return
+        sprite = image_to_pixels(selected_files[0], 
+                                 sprite_size, 
+                                 brightness_var.get(), 
+                                 contrast_var.get(), 
+                                 saturation_var.get())
         
         display_image = sprite.resize((sprite_size*8, sprite_size*8), Image.NEAREST)
 
@@ -94,8 +108,6 @@ def run_ui():
         img_label.image = tk_img
         img_label.pack(pady=10)
 
-        preview_window.mainloop()
-
     ttk.Label(root, text="Sprite Converter", font=("Arial", 16)).pack(pady=10)
     ttk.Button(root, text="Select Images", command=select_files).pack()
 
@@ -104,6 +116,18 @@ def run_ui():
 
     ttk.Label(root, text="Select Sprite Size:").pack()
     OptionMenu(root, sprite_size_var, sprite_sizes[0], *sprite_sizes[1:]).pack(pady=5)
+
+    ttk.Label(root, text="Brightness").pack()
+    Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
+          variable=brightness_var).pack(fill="x", padx=20)
+
+    ttk.Label(root, text="Contrast").pack()
+    Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
+          variable=contrast_var).pack(fill="x", padx=20)
+
+    ttk.Label(root, text="Saturation").pack()
+    Scale(root, from_=0.2, to=2.5, orient=HORIZONTAL, resolution=0.1,
+          variable=saturation_var).pack(fill="x", padx=20)
 
     ttk.Button(root, text="Convert Images", command=convert_images).pack(pady=10)
     ttk.Button(root, text="Preview First Image", command=preview_image).pack(pady=5)
