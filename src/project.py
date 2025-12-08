@@ -1,5 +1,5 @@
 import os
-from tkinter import Tk, filedialog, StringVar, OptionMenu, Toplevel
+from tkinter import Tk, filedialog, StringVar, OptionMenu, Toplevel, DoubleVar
 from tkinter import ttk, Scale, HORIZONTAL
 from PIL import Image, ImageTk, ImageEnhance
 
@@ -49,9 +49,9 @@ def run_ui():
     selected_files = []
 
     # Slider values
-    brightness_var = ttk.DoubleVar(value=1.0)
-    contrast_var = ttk.DoubleVar(value=1.0)
-    saturation_var = ttk.DoubleVar(value=1.0)
+    brightness_var = DoubleVar(value=1.0)
+    contrast_var = DoubleVar(value=1.0)
+    saturation_var = DoubleVar(value=1.0)
 
     def select_files():
         nonlocal selected_files
