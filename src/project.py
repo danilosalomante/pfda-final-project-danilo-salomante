@@ -36,7 +36,7 @@ def run_ui():
     root.geometry("400x250")
 
     # Sprite size selection
-    sprite_sizes = ["8x8", "16x16", "32x32", "64x64"]
+    sprite_sizes = ["8x8", "16x16", "32x32", "64x64", "128x128"]
     sprite_size_var = StringVar(root)
     sprite_size_var.set(sprite_sizes[0])
 
