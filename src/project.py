@@ -38,7 +38,7 @@ def run_ui():
     '''
     root = Tk()
     root.title("Image to Sprite Converter")
-    root.geometry("400x250")
+    root.geometry("800x500")
 
     # Sprite size selection
     sprite_sizes = ["8x8", "16x16", "32x32", "64x64", "128x128"]
@@ -100,7 +100,7 @@ def run_ui():
         contrast_var.get(), 
         saturation_var.get()
         )
-        display_img = sprite.resize((sprite_size*4, sprite_size*8), Image.NEAREST)
+        display_img = sprite.resize((sprite_size*4, sprite_size*4), Image.NEAREST)
         tk_img = ImageTk.PhotoImage(display_img)
 
         if preview_window is None or not preview_window.winfo_exists():
@@ -114,7 +114,7 @@ def run_ui():
             preview_label.config(image=tk_img)
             preview_label.image = tk_img
 
-    ttk.Label(root, text="Sprite Converter", font=("Arial", 16)).pack(pady=10)
+    ttk.Label(root, text="Image to Sprite Converter", font=("Arial", 16)).pack(pady=10)
     ttk.Button(root, text="Select Images", command=select_files).pack()
 
     file_label = ttk.Label(root, text="No files selected")
