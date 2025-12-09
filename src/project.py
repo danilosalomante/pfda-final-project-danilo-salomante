@@ -143,6 +143,11 @@ def run_ui():
                                      contrast_var.get(), 
                                      saturation_var.get(),
                                      palette_name=palette_var.get())
+        if sprite.mode == "RGBA":
+            output_path = output_path.rsplit(".",1)[0] + ".png"
+            sprite.save(output_path, format="PNG")    
+            
+        else: 
             sprite.save(output_path)
 
         file_label.config(text="Conversion completed!")
